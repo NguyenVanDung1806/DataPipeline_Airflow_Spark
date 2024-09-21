@@ -1,0 +1,7 @@
+Thiết lập quyền thực thi cho script:
+chmod +x ./docker-airflow/pg-init-scripts/init-db.sh
+chmod +x ./script/entrypoint.sh
+#khi lam thi from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator khong chay dc 
+apache-airflow-providers-apache-spark add requirements.txt
+pip install requirements.txt and down container before starting docker compose up --build
+

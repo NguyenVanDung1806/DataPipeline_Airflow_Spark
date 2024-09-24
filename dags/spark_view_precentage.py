@@ -1,15 +1,13 @@
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator  # Cập nhật từ DummyOperator
+from airflow.operators.empty import EmptyOperator
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
-
-
 from datetime import datetime, timedelta
 
 ###############################################
 # Parameters
 ###############################################
-spark_master = "spark://spark:7077"
-postgres_driver_jar = "/usr/local/spark/resources/jars/postgresql-9.4.1207.jar"
+spark_master = "spark://spark:7077"  # Cấu hình cho Spark Standalone
+postgres_driver_jar = "/usr/local/spark/resources/jars/postgresql-42.2.19.jar"
 
 video_views = "/usr/local/spark/resources/data/video_views.csv"
 videos = "/usr/local/spark/resources/data/videos.json"
@@ -35,10 +33,10 @@ default_args = {
 dag = DAG(
     "spark-postgres-percentage", 
     default_args=default_args, 
-    schedule=timedelta(1)
+    schedule=timedelta(days=1)  # Lịch chạy hàng ngày
 )
 
-start = EmptyOperator(task_id="start", dag=dag)  # Sử dụng EmptyOperator
+start = EmptyOperator(task_id="start", dag=dag)
 
 spark_job_load_data = SparkSubmitOperator(
     task_id="job-load-data",
@@ -46,7 +44,7 @@ spark_job_load_data = SparkSubmitOperator(
     name="load-postgres",
     conn_id="spark_default",
     verbose=1,
-    conf={"spark.master": spark_master},
+    conf={"spark.master": spark_master},  # Đảm bảo không chạy YARN
     application_args=[video_views, videos, postgres_db, postgres_user, postgres_pwd],
     jars=postgres_driver_jar,
     driver_class_path=postgres_driver_jar,

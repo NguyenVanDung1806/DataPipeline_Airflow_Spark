@@ -4,9 +4,9 @@ services:
   postgres:
     image: postgres:14
     networks:
-      - my_network
+      - my_network #network in all services must alike this my_network
     volumes:
-      - ./docker-airflow/pg-init-scripts:/docker-entrypoint-initdb.d
+      - ./docker-airflow/pg-init-scripts:/docker-entrypoint-initdb.d # read file init.db
     environment:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
@@ -138,14 +138,14 @@ services:
     networks:
       - my_network
     ports:
-      - "8888:8888"
-      - "4040-4080:4040-4080"
+      - "8888:8888" #UI port
+      - "4040-4080:4040-4080" #multiple ports
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - JUPYTER_ENABLE_LAB=yes
     volumes:
       - ../notebooks:/home/jovyan/work/notebooks # Development folder
-      - ../spark/resources/data:/home/jovyan/work/data/
+      - ../spark/resources/data:/home/jovyan/work/data/ #user jovyan default
       - ../spark/resources/jars:/home/jovyan/work/jars/
     depends_on:
       - spark-master
@@ -153,4 +153,4 @@ services:
 
 networks:
   my_network:
-    driver: bridge
+    driver: bridge # network docker

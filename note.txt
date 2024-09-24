@@ -5,3 +5,14 @@ chmod +x ./script/entrypoint.sh
 apache-airflow-providers-apache-spark add requirements.txt
 pip install requirements.txt and down container before starting docker compose up --build
 
+
+gap truong hop trong file docker container ánh xạ không có file thì cần thay đổi quyền truy cập 
+Kiểm Tra Quyền Truy Cập:
+ls -ld ../spark/resources/jars
+Thay Đổi Quyền Truy Cập:
+sudo chmod -R 755 ../spark/resources/jars
+Chạy Lại Lệnh Với Quyền Quản Trị:
+sudo ls ../spark/resources/jars
+check file co ton tai trong container :
+docker exec -it <container-name> /bin/bash 
+

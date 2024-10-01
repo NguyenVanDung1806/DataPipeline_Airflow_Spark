@@ -1,12 +1,12 @@
-version: "3.9"
+version: "3.9" # Đảm bảo bạn có khai báo phiên bản ở đầu tệp
 
 services:
   postgres:
     image: postgres:14
     networks:
-      - my_network #network in all services must alike this my_network
+      - my_network
     volumes:
-      - ./docker-airflow/pg-init-scripts:/docker-entrypoint-initdb.d # read file init.db
+      - ./docker-airflow/pg-init-scripts:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
@@ -15,7 +15,9 @@ services:
       - "5434:5432"
 
   webserver:
-    image: apache/airflow:2.6.0-python3.9
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: webserver
     entrypoint: ["/opt/airflow/script/entrypoint.sh"]
     restart: always
@@ -75,12 +77,13 @@ services:
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
+      - JAVA_HOME=/usr/lib/jvm/java-11-openjdk
     volumes:
-      - ../spark/app:/usr/local/spark/app
-      - ../spark/resources:/usr/local/spark/resources
+      - ./spark/app:/usr/local/spark/app
+      - ./spark/resources:/usr/local/spark/resources
     ports:
-      - "8181:8080" # Spark UI
-      - "7077:7077" # Spark master port
+      - "8181:8080"
+      - "7077:7077"
 
   spark-worker-1:
     image: bitnami/spark:latest
@@ -93,9 +96,10 @@ services:
       - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
+      - JAVA_HOME=/path/to/java
     volumes:
-      - ../spark/app:/usr/local/spark/app
-      - ../spark/resources:/usr/local/spark/resources
+      - ./spark/app:/usr/local/spark/app
+      - ./spark/resources:/usr/local/spark/resources
     depends_on:
       - spark-master
 
@@ -110,9 +114,10 @@ services:
       - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
+      - JAVA_HOME=/usr/lib/jvm/java-11-openjdk
     volumes:
-      - ../spark/app:/usr/local/spark/app
-      - ../spark/resources:/usr/local/spark/resources
+      - ./spark/app:/usr/local/spark/app
+      - ./spark/resources:/usr/local/spark/resources
     depends_on:
       - spark-master
 
@@ -127,9 +132,10 @@ services:
       - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
+      - JAVA_HOME=/usr/lib/jvm/java-11-openjdk
     volumes:
-      - ../spark/app:/usr/local/spark/app
-      - ../spark/resources:/usr/local/spark/resources
+      - ./spark/app:/usr/local/spark/app
+      - ./spark/resources:/usr/local/spark/resources
     depends_on:
       - spark-master
 
@@ -138,19 +144,19 @@ services:
     networks:
       - my_network
     ports:
-      - "8888:8888" #UI port
-      - "4040-4080:4040-4080" #multiple ports
+      - "8888:8888"
+      - "4040-4080:4040-4080"
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - JUPYTER_ENABLE_LAB=yes
     volumes:
-      - ../notebooks:/home/jovyan/work/notebooks # Development folder
-      - ../spark/resources/data:/home/jovyan/work/data/ #user jovyan default
-      - ../spark/resources/jars:/home/jovyan/work/jars/
+      - ./notebooks:/home/jovyan/work/notebooks
+      - ./spark/resources/data:/home/jovyan/work/data/
+      - ./spark/resources/jars:/home/jovyan/work/jars/
     depends_on:
       - spark-master
     command: "start.sh jupyter lab"
 
 networks:
   my_network:
-    driver: bridge # network docker
+    driver: bridge

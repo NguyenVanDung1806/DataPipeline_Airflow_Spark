@@ -8,8 +8,7 @@ from datetime import datetime, timedelta
 ###############################################
 spark_master = "spark://spark:7077"  # Cấu hình cho Spark Standalone
 postgres_driver_jar = "/usr/local/spark/resources/jars/postgresql-42.2.19.jar"
-
-video_views = "/usr/local/spark/resources/data/video_views.csv"
+video_views = "/usr/local/spark/resources/data/video_views_mini.csv"
 videos = "/usr/local/spark/resources/data/videos.json"
 postgres_db = "jdbc:postgresql://postgres/test"
 postgres_user = "test"
@@ -44,11 +43,13 @@ spark_job_load_data = SparkSubmitOperator(
     name="load-postgres",
     conn_id="spark_default",
     verbose=1,
-    conf={"spark.master": spark_master},  # Đảm bảo không chạy YARN
+    conf={
+        "spark.master": "spark://spark:7077",  # Chỉ định chế độ chạy Spark trong cấu hình
+        "spark.driver.extraClassPath": postgres_driver_jar,  # Thêm đường dẫn jar PostgreSQL
+        "spark.executor.extraClassPath": postgres_driver_jar
+    },
     application_args=[video_views, videos, postgres_db, postgres_user, postgres_pwd],
     jars=postgres_driver_jar,
-    driver_class_path=postgres_driver_jar,
     dag=dag
 )
-
 start >> spark_job_load_data

@@ -44,7 +44,7 @@ spark_job_load_data = SparkSubmitOperator(
     conn_id="spark_default",
     verbose=1,
     conf={
-        "spark.master": "spark://spark:7077",  # Chỉ định chế độ chạy Spark trong cấu hình
+        "spark.master": spark_master,  # Chỉ định chế độ chạy Spark trong cấu hình
         "spark.driver.extraClassPath": postgres_driver_jar,  # Thêm đường dẫn jar PostgreSQL
         "spark.executor.extraClassPath": postgres_driver_jar
     },
@@ -52,4 +52,5 @@ spark_job_load_data = SparkSubmitOperator(
     jars=postgres_driver_jar,
     dag=dag
 )
+
 start >> spark_job_load_data

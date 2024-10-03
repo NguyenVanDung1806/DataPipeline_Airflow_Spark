@@ -5,7 +5,7 @@ chmod +x ./script/entrypoint.sh
 apache-airflow-providers-apache-spark add requirements.txt
 pip install requirements.txt and down container before starting docker compose up --build
 
-
+################################
 gap truong hop trong file docker container ánh xạ không có file thì cần thay đổi quyền truy cập 
 Kiểm Tra Quyền Truy Cập:
 ls -ld ../spark/resources/jars
@@ -15,22 +15,26 @@ Chạy Lại Lệnh Với Quyền Quản Trị:
 sudo ls ../spark/resources/jars
 check file co ton tai trong container :
 docker exec -it <container-name> /bin/bash 
-
+################################################################
+tim file co nam trong container khong
 docker exec -it datapipeline_spark_airflow-spark-master-1 find /usr/local/spark/app -name "load-data.py"
 docker exec -it datapipeline_spark_airflow-spark-master-1 find /usr/local/spark/resources/data -name "*.csv"
 docker exec -it datapipeline_spark_airflow-spark-master-1 find /usr/local/spark/resources/data -name "*.json"
 
 run spark job terminal
 docker exec -it datapipeline_spark_airflow-spark-master-1 spark-submit --master spark://spark:7077 --driver-class-path /usr/local/spark/resources/jars/postgresql-42.2.19.jar --jars /usr/local/spark/resources/jars/postgresql-42.2.19.jar --name load-postgres /usr/local/spark/app/load-data.py /usr/local/spark/resources/data/video_views.csv /usr/local/spark/resources/data/videos.json jdbc:postgresql://postgres/test test postgres
-#submit test 
+########################################################################
+submit test 
 spark-submit --master spark://spark-master:7077 /usr/local/spark/app/wordcount.py
 - JAVA_HOME=/path/to/java
+########################################################################
+cai dat java trong airflow 
 docker exec -it datapipeline_spark_airflow-webserver-1  /bin/bash
 java --version
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 echo $JAVA_HOME
 which java
-
-
 export JAVA_HOME=/path/to/java
 export PATH=$JAVA_HOME/bin:$PATH
+#xoa cac container dang chay ngam ton bo nho 
+docker system prune -a

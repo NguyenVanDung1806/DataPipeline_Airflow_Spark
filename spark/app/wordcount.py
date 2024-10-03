@@ -5,7 +5,7 @@ def main():
     sc = SparkContext(appName="WordCount")
     
     # Đọc file đầu vào
-    input_file = "/usr/local/spark/resources/data/input.txt"
+    input_file = "/usr/local/spark/resources/data/haha.txt"
     text_file = sc.textFile(input_file)
     
     # Thực hiện tính toán WordCount

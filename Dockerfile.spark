@@ -11,5 +11,6 @@ RUN apt-get update && \
 # Thiết lập biến môi trường JAVA_HOME
 ENV JAVA_HOME=/opt/bitnami/java
 ENV PATH="$JAVA_HOME/bin:$PATH"
+ENV SPARK_MASTER_URL=spark://spark-master:7077
 
 USER bitnami

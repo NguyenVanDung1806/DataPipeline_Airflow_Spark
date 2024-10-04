@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 ###############################################
 # Parameters
 ###############################################
-spark_master = "spark://spark:7077"  # Cấu hình cho Spark Standalone
+spark_master = "spark://spark-master:7077/spark"
 postgres_driver_jar = "/usr/local/spark/resources/jars/postgresql-42.2.19.jar"
 video_views = "/usr/local/spark/resources/data/video_views_mini.csv"
 videos = "/usr/local/spark/resources/data/videos.json"
@@ -17,11 +17,10 @@ postgres_pwd = "postgres"
 ###############################################
 # DAG Definition
 ###############################################
-now = datetime.now()
 default_args = {
     "owner": "airflow",
     "depends_on_past": False,
-    "start_date": datetime(now.year, now.month, now.day),
+    "start_date": datetime(2024, 10, 4),  # Ngày khởi động
     "email": ["airflow@airflow.com"],
     "email_on_failure": False,
     "email_on_retry": False,
@@ -44,8 +43,8 @@ spark_job_load_data = SparkSubmitOperator(
     conn_id="spark_default",
     verbose=1,
     conf={
-        "spark.master": spark_master,  # Chỉ định chế độ chạy Spark trong cấu hình
-        "spark.driver.extraClassPath": postgres_driver_jar,  # Thêm đường dẫn jar PostgreSQL
+        "spark.master": spark_master,
+        "spark.driver.extraClassPath": postgres_driver_jar,
         "spark.executor.extraClassPath": postgres_driver_jar
     },
     application_args=[video_views, videos, postgres_db, postgres_user, postgres_pwd],

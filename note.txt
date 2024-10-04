@@ -26,6 +26,10 @@ docker exec -it datapipeline_spark_airflow-spark-master-1 spark-submit --master 
 ########################################################################
 submit test 
 spark-submit --master spark://spark-master:7077 /usr/local/spark/app/wordcount.py
+
+spark-submit --master yarn --conf spark.master=spark://spark:7077 --conf spark.driver.extraClassPath=/usr/local/spark/resources/jars/postgresql-42.2.19.jar --conf spark.executor.extraClassPath=/usr/local/spark/resources/jars/postgresql-42.2.19.jar --jars /usr/local/spark/resources/jars/postgresql-42.2.19.jar --name load-postgres --verbose --queue root.default /usr/local/spark/app/load-data.py /usr/local/spark/resources/data/video_views_mini.csv /usr/local/spark/resources/data/videos.json jdbc:postgresql://postgres/test test postgres
+
+
 - JAVA_HOME=/path/to/java
 ########################################################################
 cai dat java trong airflow 
@@ -38,3 +42,5 @@ export JAVA_HOME=/path/to/java
 export PATH=$JAVA_HOME/bin:$PATH
 #xoa cac container dang chay ngam ton bo nho 
 docker system prune -a
+spark-submit --master spark-master:7077 --conf spark.master=spark://spark:7077 --conf spark.driver.extraClassPath=/usr/local/spark/resources/jars/postgresql-42.2.19.jar --conf spark.executor.extraClassPath=/usr/local/spark/resources/jars/postgresql-42.2.19.jar --jars /usr/local/spark/resources/jars/postgresql-42.2.19.jar --name load-postgres --verbose --deploy-mode client /usr/local/spark/app/load-data.py /usr/local/spark/resources/data/video_views_mini.csv /usr/local/spark/resources/data/videos.json jdbc:postgresql://postgres/test test postgres
+airflow connections get spark_default

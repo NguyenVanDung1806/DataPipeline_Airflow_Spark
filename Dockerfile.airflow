@@ -1,16 +1,20 @@
 # Dockerfile.airflow
-FROM apache/airflow:2.6.0-python3.9
+FROM apache/airflow:2.8.0-python3.9
 
 USER root
 
-# Cài đặt OpenJDK 11 và procps
+# Cài đặt OpenJDK 17 và procps (có thể giữ nguyên nếu bạn đã cài đặt JDK)
 RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk procps && \
+    apt-get install -y openjdk-17-jdk procps && \
+    apt-get install -y gcc python3-dev libffi-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Thiết lập biến môi trường JAVA_HOME
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+# Thiết lập biến môi trường JAVA_HOME cho ARM64 (nếu bạn cần JDK)
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
 USER airflow
+
+# Cài đặt Apache Airflow provider cho Spark
+RUN pip install --no-cache-dir apache-airflow-providers-apache-spark==4.8.0

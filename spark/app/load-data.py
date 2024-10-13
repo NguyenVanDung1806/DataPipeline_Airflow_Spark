@@ -8,7 +8,6 @@ spark = (SparkSession
     .builder
     .getOrCreate()
 )
-
 ####################################
 # Parameters
 ####################################
@@ -17,7 +16,6 @@ videos = sys.argv[2]
 postgres_db = sys.argv[3]
 postgres_user = sys.argv[4]
 postgres_pwd = sys.argv[5]
-
 ####################################
 # Read CSV Data
 ####################################
@@ -38,6 +36,12 @@ df_videos_json = (
     .option("header", True)
     .load(videos)
 )
+
+# Chuyển _id.$oid thành chuỗi và bỏ cột _id
+df_videos_json = df_videos_json.withColumn("id", col("_id.$oid").cast("string")).drop("_id")
+
+# Chuyển genre thành chuỗi (nếu cần)
+df_videos_json = df_videos_json.withColumn("genre", col("genre").cast("string"))
 
 ####################################
 # Load data to Postgres
